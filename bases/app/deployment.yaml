@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app
+spec:
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      serviceAccountName: sample-app
+      containers:
+      - name: sample-app
+        image: alpine
+        ports:
+        - name: http-port
+          protocol: TCP
+          containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: sample-app-env-variables
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 768Mi
+          requests:
+            cpu: 1000m
+            memory: 768Mi
+        volumeMounts:
+        - name: sample-app-env-variables
+          readOnly: true
+          mountPath: /config/sample-app-env-variables
+        - name: scratch
+          mountPath: /var/log
+        - name: scratch
+          mountPath: /tmp
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 5
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - all
+          privileged: false
+          readOnlyRootFilesystem: true
+      volumes:
+      - name: sample-app-env-variables
+        configMap:
+          name: sample-app-env-variables
+      - name: scratch
+        emptyDir: {}
+      securityContext:
+        fsGroup: 1900
+        runAsGroup: 1900
+        runAsNonRoot: true
+        runAsUser: 1900

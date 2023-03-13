@@ -1,0 +1,9 @@
+nameReference:
+- kind: Secret
+  fieldSpecs:
+  - path: spec/endpoints/basicAuth/username/name
+    kind: ServiceMonitor
+- kind: Secret
+  fieldSpecs:
+  - path: spec/endpoints/basicAuth/password/name
+    kind: ServiceMonitor

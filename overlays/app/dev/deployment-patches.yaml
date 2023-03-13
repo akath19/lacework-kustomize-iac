@@ -1,0 +1,7 @@
+- op: add
+  path: /spec/strategy
+  value:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+    type: RollingUpdate

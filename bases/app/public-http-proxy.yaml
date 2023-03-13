@@ -1,0 +1,20 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: sample-app-public
+spec:
+  ingressClassName: contour-external
+  routes:
+  - services:
+    - name: sample-app
+      port: 8080
+    conditions:
+    - prefix: /authorization/
+    pathRewritePolicy:
+      replacePrefix:
+      - prefix: /authorization/
+        replacement: /
+    requestHeadersPolicy:
+      set:
+      - name: X-Forwarded-Prefix
+        value: "/sample-app"

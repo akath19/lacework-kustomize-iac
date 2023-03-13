@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sample-app
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sample-app
+  endpoints:
+    - port: admin-port
+      path: /prometheus
+      basicAuth:
+        username:
+          key: username
+          name: sample-app-basic-auth
+          optional: false
+        password:
+          key: password
+          name: sample-app-basic-auth
+          optional: false
+      interval: 15s
